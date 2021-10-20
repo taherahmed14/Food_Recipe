@@ -20,7 +20,7 @@
     
     <div id="navbar"></div>
     <img class="cupCake" src="https://cdn-icons.flaticon.com/png/512/3173/premium/3173469.png?token=exp=1634660276~hmac=5b5d30b968f2b68ccc8b5842e005c751">
-    <input oninput="debounce(show, 1000)" type="text" id="searchInput" placeholder="Search Recipe" />
+    <input type="text" id="searchInput" placeholder="Search Recipe" />
     <div id="dropdown"></div>
     <div id="container"></div>
 
@@ -30,105 +30,15 @@
 <script type="module">
 
     import navbar from "./components/navbar.js";
+    import {show, showDropDown, debounce, appendSearch} from "./scripts/scripts.js";
 
     let navbarCont = document.getElementById("navbar");
     navbarCont.innerHTML = navbar();
 
-</script>
+    let inputSearch = document.getElementById("searchInput");
 
-<script>
-
-    let timerId;
-    let dropDown = document.getElementById("dropdown");
-    let container = document.getElementById("container");
-
-    function show(){
-
-        let inputValue = document.getElementById("searchInput").value; 
-
-        fetch(`http://themealdb.com/api/json/v1/1/search.php?s=${inputValue}`)
-        .then((res) => {
-            return res.json();
-        })
-        .then((res) => {
-            console.log(res);
-            showDropDown(res.meals);    
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-
-    }
-
-    function showDropDown(data){
-
-        dropDown.setAttribute("class", "dropdown");
-        dropDown.innerHTML = null;
-
-        data.forEach(function(el) {
-
-            let div = document.createElement("div");
-            div.setAttribute("class", "recipeDiv");
-
-            let recipeName = document.createElement("div");
-            recipeName.innerText = el.strMeal;
-            recipeName.setAttribute("class", "recipeName");
-
-            div.onclick = function(){
-                console.log(el);
-                append(el);
-            };
-
-            div.append(recipeName);
-            dropDown.append(div);
-
-        });
-
-    }
-
-    function debounce(func, delay){
-
-        let inputValue = document.getElementById("searchInput").value; 
-
-        if(inputValue == ""){
-            dropDown.removeAttribute("class", "dropdown");
-            dropDown.innerHTML = null;
-        }
-
-        if(timerId){
-            clearTimeout(timerId);
-        }
-
-        timerId = setTimeout(() => {
-            func();
-        }, delay);
-
-    }
-
-    function append(data){
-
-    container.innerHTML = null;
-    dropDown.removeAttribute("class", "dropdown");
-    dropDown.innerHTML = null;
-
-    let div = document.createElement("div");
-
-    let image = document.createElement("img");
-    image.src = data.strMealThumb;
-
-    let title = document.createElement("h3");
-    title.innerText = data.strMeal;
-
-    let cuisine = document.createElement("p");
-    cuisine.innerText = "Cuisine: " + data.strArea;
-
-    let recipe = document.createElement("p");
-    recipe.innerText = data.strInstructions;
-
-    div.append(image, title, cuisine, recipe);
-    container.append(div);
-
-}   
-
-
+    inputSearch.oninput = function(){
+        inputSearch.onclick = debounce(show, 1000);
+    };
+    
 </script>
